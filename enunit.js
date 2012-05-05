@@ -48,44 +48,56 @@ var parseUnitString = (function() {
   };
 }());
 
+function UnitedValue(factor, basis) {
+  this.factor = factor;
+  this.basis = basis;
+};
+
+
 function resolveUnits(unitLookup, derivedPowers) {
-  var factor = 1;
+  var factor = derivedPowers.factor;
   var basis = {};
-  for (var derivedUnit in derivedPowers) {
+  for (var derivedUnit in derivedPowers.basis) {
     var inBase = unitLookup[derivedUnit];
     if (!inBase) throw new Error('Unknown unit: ' + derivedUnit);
     
-    var power = derivedPower[derivedUnit];
+    var power = derivedPowers.basis[derivedUnit];
     factor *= Math.pow(inBase.factor, power);
     for (var baseUnit in inBase.basis) {
-      basis[baseUnit] = (basis[baseUnit]||0) + power*inBase.basis[baseUnit];
+      var basisPower = (basis[baseUnit]||0) + power*inBase.basis[baseUnit];
+      if (basisPower === 0) {
+        delete basis[baseUnit];
+      } else {
+        basis[baseUnit] = basisPower;
+      }
     }
   }
-  return {factor: factor, basis: basis};
+  
+  return new UnitedValue(factor, basis);
 }
 
 // Like a namespace, but for units
 function UnitSpace() {
   
-  var units = {};
-  var unitSpace = function(amount, unit) {
-    
+  var registered = {};
+  var unitSpace = function(amount, unitString) {
+    return resolveUnits(registered, new UnitedValue(amount, parseUnitString(unitString)));
   };
   
   unitSpace.register = function(name, factor, equivalent) {
-    if (equivalent) {
-      // Derived unit
-      
-    } else {
-      // Base unit
-      if (units[name] && units[name]!=true) throw 'There is already a unit called "' + name + '"';    
-      units[name] = true;
+    if (registered[name]) throw 'There is already a unit called "' + name + '"';   
+    
+    if (equivalent) { // Derived unit
+      registered[name] = unitSpace(factor, equivalent);
+    } else { // Base unit 
+      registered[name] = { factor: 1, basis: {} };
+      registered[name].basis[name] = 1;
     }
   };
   return unitSpace;
 };
 
-
+/*
 addBaseUnit('m', 'length');
 addBaseUnit('g', 'mass');
 addBaseUnit('s', 'time');
@@ -97,11 +109,13 @@ addDerivedUnit('ft', 12, 'inch');
 addDerivedUnit('mi', 5280, 'ft');
 
 var inUnit = function() {
-}
+}*/
+
 
 //exports = inUnit;
 //exports.parseUnitString = parseUnitString;
 exports.parseUnitString = parseUnitString;
+exports.resolveUnits = resolveUnits;
 exports.UnitSpace = UnitSpace;
 //var x = inUnit(5, 'm/s').times( inUnit(8, 's') ).as('miles')
 //inUnit(4, 'ft').times( inUnit(6, 'm/s^2') ).as('m^2/s^2')

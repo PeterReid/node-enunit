@@ -18,20 +18,25 @@ assert.deepEqual(enunit.parseUnitString('m^2s^2'), {m:2, s:2});
 
 assert.throws(function() { enunit.parseUnitString('*m'); });
 assert.throws(function() { enunit.parseUnitString('m*'); });
+assert.throws(function() { enunit.parseUnitString(''); });
 assert.throws(function() { enunit.parseUnitString('m/s/s'); });
 assert.throws(function() { enunit.parseUnitString('m/s/s'); });
 
 assert.deepEqual(
   enunit.resolveUnits({knot: {factor: 0.51444, basis: {meter: 1, second: -1}},
                        hour: {factor: 3600, basis: {second: 1}}},
-                      {knot: 1, hour: 1}),
-  {factor: .051444*3600,
+                      {factor: 1, basis: {knot: 1, hour: 1}}),
+  {factor: 0.51444*3600,
    basis: { meter: 1 }});
-  
-  
+
 
 var byteUnits = enunit.UnitSpace();
 byteUnits.register('second');
 byteUnits.register('byte');
-byteUnits.register('kilobyte', 1024, 'byte');
+byteUnits.register('kibibyte', 1024, 'byte');
+byteUnits.register('mebibyte', 1024, 'kibibyte');
+byteUnits.register('MiB', 1, 'mebibyte');
 
+assert.deepEqual(
+  byteUnits(4, 'kibibyte/second'),
+  {factor: 4096, basis: {byte: 1, second: -1}});
