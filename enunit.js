@@ -48,74 +48,195 @@ var parseUnitString = (function() {
   };
 }());
 
-function UnitedValue(factor, basis) {
-  this.factor = factor;
-  this.basis = basis;
-};
+var basisToString = (function() {
+  var expString = function(name, exponent) {
+    if (exponent === 1) {
+      return name;
+    }
+    return name + '^' + exponent;
+  };
 
-
-function resolveUnits(unitLookup, derivedPowers) {
-  var factor = derivedPowers.factor;
-  var basis = {};
-  for (var derivedUnit in derivedPowers.basis) {
-    var inBase = unitLookup[derivedUnit];
-    if (!inBase) throw new Error('Unknown unit: ' + derivedUnit);
+  return function(basis){
+    var u;
+    var top = [];
+    var bottom = [];
+    for (var u in basis) {
+      if (basis[u] < 0) bottom.push( expString(u, -basis[u]) );
+      else top.push(expString(u, basis[u]))
+    }
     
-    var power = derivedPowers.basis[derivedUnit];
-    factor *= Math.pow(inBase.factor, power);
-    for (var baseUnit in inBase.basis) {
-      var basisPower = (basis[baseUnit]||0) + power*inBase.basis[baseUnit];
-      if (basisPower === 0) {
-        delete basis[baseUnit];
-      } else {
-        basis[baseUnit] = basisPower;
-      }
+    top = top ? top.join('*') : '1';
+    
+    if (bottom.length) return top + ' / ' + bottom.join('*');
+    return top;
+  }
+})();
+
+function basesEqual(basis1, basis2) {
+  var u;
+  for (var u in basis1) {
+    if (basis1[u] != basis2[u]) return false;
+  }
+  for (var u in basis2) {
+    if (basis1[u] != basis2[u]) return false;
+  }
+  return true;
+}
+
+function combineBases(basis1, basis2) {
+  var u;
+  var result = {};
+  for (var u in basis1) {
+    var sum = basis1[u] + (basis2[u]||0);
+    if (sum) {
+      result[u] = sum;
     }
   }
-  
-  return new UnitedValue(factor, basis);
+  for (var u in basis2) {
+    if (basis1[u] === undefined) {
+      result[u] = basis2[u];
+    }
+  }
+  return result;
 }
+
+function ensureBasisMatch(v1, v2, op, preposition) {
+  if (!basesEqual(v1.basis, v2.basis)) {
+    throw new Error('Unit mismatch when ' + op + ' ' + basisToString(v1.basis) + ' ' + preposition + ' ' + basisToString(v2.basis) + '.');
+  }
+}
+
+
 
 // Like a namespace, but for units
 function UnitSpace() {
-  
   var registered = {};
   var unitSpace = function(amount, unitString) {
-    return resolveUnits(registered, new UnitedValue(amount, parseUnitString(unitString)));
+    return resolveUnits(new UnitedValue(amount, parseUnitString(unitString)));
   };
   
-  unitSpace.register = function(name, factor, equivalent) {
-    if (registered[name]) throw 'There is already a unit called "' + name + '"';   
-    
-    if (equivalent) { // Derived unit
-      registered[name] = unitSpace(factor, equivalent);
-    } else { // Base unit 
-      registered[name] = { factor: 1, basis: {} };
-      registered[name].basis[name] = 1;
+  var resolveUnits = function(derivedPowers) {
+    var factor = derivedPowers.factor;
+    var basis = {};
+    for (var derivedUnit in derivedPowers.basis) {
+      var inBase = registered[derivedUnit];
+      if (!inBase) throw new Error('Unknown unit: ' + derivedUnit);
+      
+      var power = derivedPowers.basis[derivedUnit];
+      factor *= Math.pow(inBase.factor, power);
+      for (var baseUnit in inBase.basis) {
+        var basisPower = (basis[baseUnit]||0) + power*inBase.basis[baseUnit];
+        if (basisPower === 0) {
+          delete basis[baseUnit];
+        } else {
+          basis[baseUnit] = basisPower;
+        }
+      }
     }
+    
+    return new UnitedValue(factor, basis);
   };
+  
+  var UnitedValue = function(factor, basis) {
+    this.factor = factor;
+    this.basis = basis;
+  };
+  UnitedValue.prototype = {
+    ensureUnitspaceMatchWith: function(v) {
+      if (this.unitSpace !== v.unitSpace) throw new Error('UnitSpace mismatch between ' + this.toString() + ' and ' + v.toString);
+    },
+    plus: function(v) {
+      this.ensureUnitspaceMatchWith(v);
+      ensureBasisMatch(this, v, 'adding', 'to');
+      return new UnitedValue(this.factor + v.factor, basis);
+    },
+    minus: function(v) {
+      this.ensureUnitspaceMatchWith(v);
+      ensureBasisMatch(this, v, 'subtracting', 'from');
+      return new UnitedValue(this.factor - v.factor, basis);
+    },
+    times: function(v) {
+      this.ensureUnitspaceMatchWith(v);
+      return new UnitedValue(this.factor * v.factor, combineBases(this.basis, v.basis, 1));
+    },
+    dividedBy: function(v) {
+      this.ensureUnitspaceMatchWith(v);
+      return new UnitedValue(this.factor / v.factor, combineBases(this.basis, v.basis, -1));
+    },
+    as: function(unitString) {
+      var destType = unitSpace(1, unitString);
+      ensureBasisMatch(this, destType, 'interpreting', 'as');
+      return this.factor / destType.factor;
+    },
+    unitSpace: unitSpace
+  };
+
+  unitSpace.register = function(names, factor, equivalent) {
+    if (typeof(names) === 'string') names = [names];
+    
+    for (var i = 0; i < names.length; i++) {
+      if (!unitRegex.exec(names[i])) throw 'Invalid unit name: "' + names[i] + '"';
+      if (registered[names[i]]) throw 'There is already a unit called "' + names[i] + '"';   
+    }
+    
+    var definition;
+    if (equivalent) { // Derived unit
+      definition = unitSpace(factor, equivalent);
+    } else { // Base unit 
+      definition = { factor: 1, basis: {} };
+      definition.basis[names[0]] = 1;
+    }
+    
+    for (var i = 0; i < names.length; i++) {
+      registered[names[i]] = definition;
+    }
+    
+    return this;
+  };
+  
   return unitSpace;
 };
 
-/*
-addBaseUnit('m', 'length');
-addBaseUnit('g', 'mass');
-addBaseUnit('s', 'time');
-addDerivedUnit('kg', 1000, 'g');
-addDerivedUnit('N', 1, 'kg m/s^2');
-addDerivedUnit('cm', 1/1000, 'm');
-addDerivedUnit('in', 2.4, 'cm');
-addDerivedUnit('ft', 12, 'inch');
-addDerivedUnit('mi', 5280, 'ft');
 
-var inUnit = function() {
-}*/
+var standard = new UnitSpace();
 
+standard
+  // Time
+  .register(['second', 's'])
+  .register(['minute', 'min'], 60, 's')
+  .register(['hour', 'hr'], 60, 'minute')
+  .register('day', 24, 'hour')
 
-//exports = inUnit;
-//exports.parseUnitString = parseUnitString;
-exports.parseUnitString = parseUnitString;
-exports.resolveUnits = resolveUnits;
-exports.UnitSpace = UnitSpace;
-//var x = inUnit(5, 'm/s').times( inUnit(8, 's') ).as('miles')
-//inUnit(4, 'ft').times( inUnit(6, 'm/s^2') ).as('m^2/s^2')
+  // Mass
+  .register(['gram', 'g'])
+  .register(['kilogram', 'kg'], 1000, 'g')
+  .register(['pound', 'lbs'], 0.45359237, 'kg')
+  .register(['ounce', 'oz'], 1/16, 'pound')
+  
+  // Distance
+  .register(['meter','m'])
+  .register(['kilometer', 'km'], 1000, 'm')
+  .register(['centimeter', 'cm'], 1/1000, 'm')
+  .register(['inch', 'in'], 2.54, 'cm')
+  .register(['foot', 'ft'], 12, 'inch')
+  .register('yard', 3, 'foot')
+  .register(['mile', 'mi'], 5280, 'ft')
+  .register(['nauticalMile', 'nmi', 'NM', 'M'], 1852, 'meter')
+  
+  // Area
+  .register('acre', 1/640, 'mi^2')
+  
+  // Volume
+  .register(['milliliter', 'ml'], 1, 'cm^3')
+  .register('liter', 1000, 'milliliter')
+  .register('gallon', 231, 'in^3') // US liquid gallon
+  .register('quart', 1/4, 'gallon') 
+  .register('pint', 1/8, 'gallon') 
+  .register('cup', 1/2, 'pint')
+  
+  .register(['Newton', 'newton', 'N'], 1, 'kg m/s^2')
+
+;
+
+module.exports = standard;
+module.exports.UnitSpace = UnitSpace;

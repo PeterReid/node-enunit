@@ -1,6 +1,7 @@
 var assert = require('assert');
 var enunit = require('../enunit');
 
+/*
 assert.deepEqual(enunit.parseUnitString('oz'), {oz: 1});
 assert.deepEqual(enunit.parseUnitString('kg*m/s^2'), {kg: 1, m: 1, s: -2});
 assert.deepEqual(enunit.parseUnitString('kg*m/s*s'), {kg: 1, m: 1, s: -2});
@@ -21,22 +22,27 @@ assert.throws(function() { enunit.parseUnitString('m*'); });
 assert.throws(function() { enunit.parseUnitString(''); });
 assert.throws(function() { enunit.parseUnitString('m/s/s'); });
 assert.throws(function() { enunit.parseUnitString('m/s/s'); });
+*/
+// Try a custom UnitSpace
+(function() {
+  var byteUnits = enunit.UnitSpace();
+  byteUnits.register('second');
+  byteUnits.register('byte');
+  byteUnits.register('kibibyte', 1024, 'byte');
+  byteUnits.register('mebibyte', 1024, 'kibibyte');
+  byteUnits.register('MiB', 1, 'mebibyte');
+  byteUnits.register('minute', 60, 'second');
+  byteUnits.register('hour', 60, 'minute');
+  byteUnits.register('day', 24, 'hour');
+  
+  assert.equal(byteUnits(4, 'kibibyte/second').as('byte/second'), 4096);
+  assert.throws(function() { byteUnits(4, 'byte').as('second'); });
+  assert.equal(byteUnits(14, 'kibibyte/second').times( byteUnits(1, 'day') ).as('MiB'), 14*60*60*24/1024);
+})();
 
-assert.deepEqual(
-  enunit.resolveUnits({knot: {factor: 0.51444, basis: {meter: 1, second: -1}},
-                       hour: {factor: 3600, basis: {second: 1}}},
-                      {factor: 1, basis: {knot: 1, hour: 1}}),
-  {factor: 0.51444*3600,
-   basis: { meter: 1 }});
+function close(x, y) {
+  return Math.abs(x-y) < 0.00001;
+}
 
 
-var byteUnits = enunit.UnitSpace();
-byteUnits.register('second');
-byteUnits.register('byte');
-byteUnits.register('kibibyte', 1024, 'byte');
-byteUnits.register('mebibyte', 1024, 'kibibyte');
-byteUnits.register('MiB', 1, 'mebibyte');
-
-assert.deepEqual(
-  byteUnits(4, 'kibibyte/second'),
-  {factor: 4096, basis: {byte: 1, second: -1}});
+assert.ok(close(enunit(1, 'gallon/hour').as('cm^3/second'), 1.05150327));
