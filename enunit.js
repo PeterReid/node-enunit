@@ -11,10 +11,19 @@ function addBaseUnit(unit, type) {
 // units may use any characters except ^, /, *, and whitespace, which are part of the syntax
 var unitRegex = /^[^\d\^\*\s\/]+$/;
 
+/* Parse a string into a map from unit strings to factors.
+ * A rough grammar:
+ *   UnitString = 1 | Terms | Terms/Terms
+ *   Terms = Term+
+ *   Term = String | String^N
+ *   String = (Anything except ^, /, *, or whitespace)+
+ *
+ * Whitespace is tolerated.
+ */
 var parseUnitString = (function() {
   var termPattern = /^\s*(\*?)\s*([^\d\s\*\^\/]+)\s*(?:\^\s*(-?\d+))?\s*/;
   var onePattern = /^\s*1\s*$/;
-  var slashPattern = /^([^\/]+)(?:\/([^\/]+))?$/; // Two anythings divided by a single slash
+  var slashPattern = /^([^\/]+)(?:\/([^\/]+))?$/; // Two anythings separated by a single slash
   
   var parseUnitProduct = function(s, sign, dest) {
     if (!s || onePattern.test(s)) return dest;
@@ -83,6 +92,7 @@ function basesEqual(basis1, basis2) {
   return true;
 }
 
+/* Combined two bases (string->int maps), summing the factors. */
 function combineBases(basis1, basis2) {
   var u;
   var result = {};
@@ -100,6 +110,8 @@ function combineBases(basis1, basis2) {
   return result;
 }
 
+/* Throw a friendly error if the units represented by UnitedValues
+ * v1 and v2 are different.  */
 function ensureBasisMatch(v1, v2, op, preposition) {
   if (!basesEqual(v1.basis, v2.basis)) {
     throw new Error('Unit mismatch when ' + op + ' ' + basisToString(v1.basis) + ' ' + preposition + ' ' + basisToString(v2.basis) + '.');
