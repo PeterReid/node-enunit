@@ -49,3 +49,4 @@ assertClose(enunit(1, 'gallon/hour').as('cm^3/second'), 1.05150327);
 assertClose(enunit(1, 'mile/hour').as('ft/hour'), 5280);
 assertClose(enunit(5, 'mile/hour').as('ft/second'), 5*5280/3600);
 assertClose(enunit(1, 'mile/hour').times(enunit(1, 'hour')).as('mile'), 1);
+assertClose(enunit(1, 'mile/hour').times(1, 'hour').as('mile'), 1);

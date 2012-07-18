@@ -107,7 +107,6 @@ function ensureBasisMatch(v1, v2, op, preposition) {
 }
 
 
-
 // Like a namespace, but for units
 function UnitSpace() {
   var registered = {};
@@ -141,28 +140,36 @@ function UnitSpace() {
     this.factor = factor;
     this.basis = basis;
   };
+  
+  // Can be called in two ways
+  // - arithmeticOp(UnitedValue)
+  // - arithmeticOp(Number, unit string)
+  function arithmeticOp(f) {
+    return function(amount, unit) {
+      var v = unit ? unitSpace(amount, unit) : amount;
+      this.ensureUnitspaceMatchWith(v);
+      return f.call(this, v);
+    }
+  }
+  
   UnitedValue.prototype = {
     ensureUnitspaceMatchWith: function(v) {
       if (this.unitSpace !== v.unitSpace) throw new Error('UnitSpace mismatch between ' + this.toString() + ' and ' + v.toString);
     },
-    plus: function(v) {
-      this.ensureUnitspaceMatchWith(v);
+    plus: arithmeticOp(function(v) {
       ensureBasisMatch(this, v, 'adding', 'to');
       return new UnitedValue(this.factor + v.factor, basis);
-    },
-    minus: function(v) {
-      this.ensureUnitspaceMatchWith(v);
+    }),
+    minus: arithmeticOp(function(v) {
       ensureBasisMatch(this, v, 'subtracting', 'from');
       return new UnitedValue(this.factor - v.factor, basis);
-    },
-    times: function(v) {
-      this.ensureUnitspaceMatchWith(v);
+    }),
+    times: arithmeticOp(function(v) {
       return new UnitedValue(this.factor * v.factor, combineBases(this.basis, v.basis, 1));
-    },
-    dividedBy: function(v) {
-      this.ensureUnitspaceMatchWith(v);
+    }),
+    dividedBy: arithmeticOp(function(v) {
       return new UnitedValue(this.factor / v.factor, combineBases(this.basis, v.basis, -1));
-    },
+    }),
     as: function(unitString) {
       var destType = unitSpace(1, unitString);
       ensureBasisMatch(this, destType, 'interpreting', 'as');
