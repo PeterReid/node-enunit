@@ -48,5 +48,13 @@ function assertClose(x, y) {
 assertClose(enunit(1, 'gallon/hour').as('cm^3/second'), 1.05150327);
 assertClose(enunit(1, 'mile/hour').as('ft/hour'), 5280);
 assertClose(enunit(5, 'mile/hour').as('ft/second'), 5*5280/3600);
+assertClose(enunit(2, 'mile/hour').as('cm/minute'), 5364.48);
+assertClose(enunit(4, 'meter/second').as('cm/minute'), 24000);
+
 assertClose(enunit(1, 'mile/hour').times(enunit(1, 'hour')).as('mile'), 1);
 assertClose(enunit(1, 'mile/hour').times(1, 'hour').as('mile'), 1);
+assertClose(enunit(1, 'mile/hour').times(1, 'hour').as('mile'), 1);
+
+assertClose(enunit(2, 'foot').plus(12, 'inch').as('yard'), 1);
+assertClose(enunit(23, 'hour').plus(59, 'minute').plus(60, 'second').as('day'), 1);
+assertClose(enunit(2, 'mile/hour').plus(4, 'meter/second').as('cm/minute'), 29364.48);

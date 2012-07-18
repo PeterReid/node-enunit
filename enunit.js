@@ -158,11 +158,11 @@ function UnitSpace() {
     },
     plus: arithmeticOp(function(v) {
       ensureBasisMatch(this, v, 'adding', 'to');
-      return new UnitedValue(this.factor + v.factor, basis);
+      return new UnitedValue(this.factor + v.factor, this.basis);
     }),
     minus: arithmeticOp(function(v) {
       ensureBasisMatch(this, v, 'subtracting', 'from');
-      return new UnitedValue(this.factor - v.factor, basis);
+      return new UnitedValue(this.factor - v.factor, this.basis);
     }),
     times: arithmeticOp(function(v) {
       return new UnitedValue(this.factor * v.factor, combineBases(this.basis, v.basis, 1));
@@ -223,7 +223,7 @@ standard
   // Distance
   .register(['meter','m'])
   .register(['kilometer', 'km'], 1000, 'm')
-  .register(['centimeter', 'cm'], 1/1000, 'm')
+  .register(['centimeter', 'cm'], 1/100, 'm')
   .register(['inch', 'in'], 2.54, 'cm')
   .register(['foot', 'ft'], 12, 'inch')
   .register('yard', 3, 'foot')
