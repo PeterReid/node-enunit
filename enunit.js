@@ -213,6 +213,10 @@ function UnitSpace() {
     return this;
   };
   
+  unitSpace.conversionFactor = function(from, to) {
+    return unitSpace(1, from).as(to);
+  }
+  
   return unitSpace;
 };
 

@@ -58,3 +58,6 @@ assertClose(enunit(1, 'mile/hour').times(1, 'hour').as('mile'), 1);
 assertClose(enunit(2, 'foot').plus(12, 'inch').as('yard'), 1);
 assertClose(enunit(23, 'hour').plus(59, 'minute').plus(60, 'second').as('day'), 1);
 assertClose(enunit(2, 'mile/hour').plus(4, 'meter/second').as('cm/minute'), 29364.48);
+
+assertClose(enunit.conversionFactor('mile', 'yard'), 1760);
+assert.throws(function() { enunit.conversionFactor('inch', 'second'); });
