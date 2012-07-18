@@ -41,11 +41,11 @@ assert.throws(function() { enunit.parseUnitString('m/s/s'); });
 })();
 
 function assertClose(x, y) {
-  return Math.abs(x-y) < 0.00001;
+  assert.ok(Math.abs(x-y) < 0.00001, x + ' ~= ' + y);
 }
 
 
-assert.ok(close(enunit(1, 'gallon/hour').as('cm^3/second'), 1.05150327));
-assert.ok(close(enunit(1, 'mile/hour').as('ft/hour'), 5280));
-assert.ok(close(enunit(5, 'mile/hour').as('ft/second'), 5*5280/3600));
-assert.ok(close(enunit(1, 'mile/hour').times(enunit(1, 'hour')).as('mile'), 1));
+assertClose(enunit(1, 'gallon/hour').as('cm^3/second'), 1.05150327);
+assertClose(enunit(1, 'mile/hour').as('ft/hour'), 5280);
+assertClose(enunit(5, 'mile/hour').as('ft/second'), 5*5280/3600);
+assertClose(enunit(1, 'mile/hour').times(enunit(1, 'hour')).as('mile'), 1);
