@@ -252,11 +252,13 @@ standard
   // Volume
   .register(['milliliter', 'ml'], 1, 'cm^3')
   .register('liter', 1000, 'milliliter')
+  .register(['centiliter', 'cl'], 1/100, 'liter')
   .register('gallon', 231, 'in^3') // US liquid gallon
   .register('quart', 1/4, 'gallon') 
   .register('pint', 1/8, 'gallon') 
   .register('cup', 1/2, 'pint')
   
+  // Force
   .register(['Newton', 'newton', 'N'], 1, 'kg m/s^2')
 
 ;
