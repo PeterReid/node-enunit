@@ -1,7 +1,6 @@
 var assert = require('assert');
 var enunit = require('../enunit');
 
-/*
 assert.deepEqual(enunit.parseUnitString('oz'), {oz: 1});
 assert.deepEqual(enunit.parseUnitString('kg*m/s^2'), {kg: 1, m: 1, s: -2});
 assert.deepEqual(enunit.parseUnitString('kg*m/s*s'), {kg: 1, m: 1, s: -2});
@@ -22,7 +21,7 @@ assert.throws(function() { enunit.parseUnitString('m*'); });
 assert.throws(function() { enunit.parseUnitString(''); });
 assert.throws(function() { enunit.parseUnitString('m/s/s'); });
 assert.throws(function() { enunit.parseUnitString('m/s/s'); });
-*/
+
 // Try a custom UnitSpace
 (function() {
   var byteUnits = enunit.UnitSpace();
