@@ -11,7 +11,7 @@ function addBaseUnit(unit, type) {
 // units may use any characters except ^, /, *, and whitespace, which are part of the syntax
 var unitRegex = /^[^\d\^\*\s\/]+$/;
 
-/* Parse a string into a map from unit strings to factors.
+/* Parse a string into a map from unit strings to powers.
  * A rough grammar:
  *   UnitString = 1 | Terms | Terms/Terms
  *   Terms = Term [*] Term [*] Term ...
@@ -19,6 +19,8 @@ var unitRegex = /^[^\d\^\*\s\/]+$/;
  *   String = (Anything except ^, /, *, or whitespace)+
  *
  * Whitespace is tolerated.
+ *
+ * Example: parseUnitString('kg*m/s^2') == {kg: 1, m: 1, s: -2}
  */
 var parseUnitString = (function() {
   var termPattern = /^\s*(\*?)\s*([^\d\s\*\^\/]+)\s*(?:\^\s*(-?\d+))?\s*/;
