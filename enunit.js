@@ -14,7 +14,7 @@ var unitRegex = /^[^\d\^\*\s\/]+$/;
 /* Parse a string into a map from unit strings to factors.
  * A rough grammar:
  *   UnitString = 1 | Terms | Terms/Terms
- *   Terms = Term+
+ *   Terms = Term [*] Term [*] Term ...
  *   Term = String | String^N
  *   String = (Anything except ^, /, *, or whitespace)+
  *
