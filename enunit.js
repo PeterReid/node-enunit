@@ -84,7 +84,7 @@ function basesEqual(basis1, basis2) {
   return true;
 }
 
-/* Combined two bases (string->int maps), summing the factors. */
+/* Combined two bases (string->int maps), summing the powers. */
 function combineBases(basis1, basis2) {
   var u;
   var result = {};
