@@ -67,6 +67,8 @@ assertClose(enunit(1, 'mile/hour').times(enunit(1, 'hour')).as('mile'), 1);
 assertClose(enunit(1, 'mile/hour').times(1, 'hour').as('mile'), 1);
 assertClose(enunit(1, 'mile/hour').times(1, 'hour').as('mile'), 1);
 
+assertClose(enunit(20, 'mile').dividedBy(60, 'mile/hour').as('minute'), 20);
+
 assertClose(enunit(2, 'foot').plus(12, 'inch').as('yard'), 1);
 assertClose(enunit(23, 'hour').plus(59, 'minute').plus(60, 'second').as('day'), 1);
 assertClose(enunit(2, 'mile/hour').plus(4, 'meter/second').as('cm/minute'), 29364.48);

@@ -85,18 +85,18 @@ function basesEqual(basis1, basis2) {
 }
 
 /* Combined two bases (string->int maps), summing the powers. */
-function combineBases(basis1, basis2) {
+function combineBases(basis1, basis2, direction) {
   var u;
   var result = {};
   for (var u in basis1) {
-    var sum = basis1[u] + (basis2[u]||0);
+    var sum = basis1[u] + (basis2[u]||0)*direction;
     if (sum) {
       result[u] = sum;
     }
   }
   for (var u in basis2) {
     if (basis1[u] === undefined) {
-      result[u] = basis2[u];
+      result[u] = basis2[u]*direction;
     }
   }
   return result;
