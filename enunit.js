@@ -150,7 +150,7 @@ function UnitSpace() {
   function arithmeticOp(f) {
     return function(amount, unit) {
       var v = unit ? unitSpace(amount, unit) : amount;
-      if (this.as !== v.as) throw new Error('UnitSpace mismatch between ' + this.toString() + ' and ' + v.toString);
+      if (this.as !== v.as) throw new Error('UnitSpace mismatch between ' + this.toString() + ' and ' + v.toString());
       return f.call(this, v);
     }
   }
@@ -174,6 +174,9 @@ function UnitSpace() {
       var destType = unitSpace(1, unitString);
       ensureBasisMatch(this, destType, 'interpreting', 'as');
       return this.factor / destType.factor;
+    },
+    toString: function() {
+      return this.factor + ' ' + formatUnitString(this.basis);
     }
   };
 
