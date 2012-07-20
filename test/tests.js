@@ -17,6 +17,7 @@ assert.deepEqual(enunit.parseUnitString('m ^ 2 s ^ 2'), {m:2, s:2});
 assert.deepEqual(enunit.parseUnitString('m^2s^2'), {m:2, s:2});
 
 assert.throws(function() { enunit.parseUnitString('*m'); });
+assert.throws(function() { enunit.parseUnitString('/m'); });
 assert.throws(function() { enunit.parseUnitString('m*'); });
 assert.throws(function() { enunit.parseUnitString(''); });
 assert.throws(function() { enunit.parseUnitString('m/s/s'); });
@@ -29,6 +30,7 @@ function parseUndoesFormat(units) {
 
 parseUndoesFormat({m: 4});
 parseUndoesFormat({m: 1});
+parseUndoesFormat({m: -1});
 parseUndoesFormat({year: 1, person: 1});
 parseUndoesFormat({meter: 1, second: -1});
 parseUndoesFormat({meter: 1, second: -2});

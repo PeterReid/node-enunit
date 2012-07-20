@@ -23,11 +23,11 @@ var parseUnitString = (function() {
     var first = true;
     while (s) {
       var match = termPattern.exec(s);
+      if (!match) throw 'Invalid term starting at \"' + s + '\"';
       if (first) {
         if (match[1]) throw 'Unexpected "*" before other terms';
         first = false;
       } 
-      if (!match) throw 'Invalid term starting at \"' + s + '\"';
       var unit = match[2];
       var exponent = parseInt(match[3],10) || 1;
       dest[unit] = (dest[unit]||0) + exponent*sign;
@@ -66,7 +66,7 @@ var formatUnitString = (function() {
       else top.push(expString(u, basis[u]))
     }
     
-    top = top ? top.join('*') : '1';
+    top = top.length ? top.join('*') : '1';
     
     if (bottom.length) return top + ' / ' + bottom.join('*');
     return top;
