@@ -110,7 +110,6 @@ function ensureBasisMatch(v1, v2, op, preposition) {
   }
 }
 
-
 // Like a namespace, but for units
 function UnitSpace() {
   var registered = {};
@@ -151,15 +150,12 @@ function UnitSpace() {
   function arithmeticOp(f) {
     return function(amount, unit) {
       var v = unit ? unitSpace(amount, unit) : amount;
-      this.ensureUnitspaceMatchWith(v);
+      if (this.unitSpace !== v.unitSpace) throw new Error('UnitSpace mismatch between ' + this.toString() + ' and ' + v.toString);
       return f.call(this, v);
     }
   }
   
   UnitedValue.prototype = {
-    ensureUnitspaceMatchWith: function(v) {
-      if (this.unitSpace !== v.unitSpace) throw new Error('UnitSpace mismatch between ' + this.toString() + ' and ' + v.toString);
-    },
     plus: arithmeticOp(function(v) {
       ensureBasisMatch(this, v, 'adding', 'to');
       return new UnitedValue(this.factor + v.factor, this.basis);
