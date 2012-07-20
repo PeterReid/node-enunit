@@ -218,9 +218,7 @@ function UnitSpace() {
 };
 
 
-var standard = new UnitSpace();
-
-standard
+var standard = new UnitSpace()
   // Time
   .register(['second', 's'])
   .register(['minute', 'min'], 60, 's')
