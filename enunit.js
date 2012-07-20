@@ -49,7 +49,7 @@ var parseUnitString = (function() {
   };
 }());
 
-var basisToString = (function() {
+var formatUnitString = (function() {
   var expString = function(name, exponent) {
     if (exponent === 1) {
       return name;
@@ -106,7 +106,7 @@ function combineBases(basis1, basis2) {
  * v1 and v2 are different.  */
 function ensureBasisMatch(v1, v2, op, preposition) {
   if (!basesEqual(v1.basis, v2.basis)) {
-    throw new Error('Unit mismatch when ' + op + ' ' + basisToString(v1.basis) + ' ' + preposition + ' ' + basisToString(v2.basis) + '.');
+    throw new Error('Unit mismatch when ' + op + ' ' + formatUnitString(v1.basis) + ' ' + preposition + ' ' + formatUnitString(v2.basis) + '.');
   }
 }
 
