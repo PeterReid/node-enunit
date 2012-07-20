@@ -1,4 +1,4 @@
-// units may use any characters except ^, /, *, and whitespace, which are part of the syntax
+﻿// units may use any characters except ^, /, *, and whitespace, which are part of the syntax
 var unitRegex = /^[^\d\^\*\s\/]+$/;
 
 /* Parse a string into a map from unit strings to powers.
@@ -253,6 +253,9 @@ standard
   // Force
   .register(['Newton', 'newton', 'N'], 1, 'kg m/s^2')
 
+  // Angle
+  .register(['radian', 'rad'])
+  .register(['degree', 'deg', '°'], Math.PI/180, 'radian')
 ;
 
 module.exports = standard;
