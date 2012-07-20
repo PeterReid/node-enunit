@@ -258,3 +258,4 @@ standard
 module.exports = standard;
 module.exports.UnitSpace = UnitSpace;
 module.exports.parseUnitString = parseUnitString;
+module.exports.formatUnitString = formatUnitString;

@@ -22,6 +22,18 @@ assert.throws(function() { enunit.parseUnitString(''); });
 assert.throws(function() { enunit.parseUnitString('m/s/s'); });
 assert.throws(function() { enunit.parseUnitString('m/s/s'); });
 
+
+function parseUndoesFormat(units) {
+  assert.deepEqual(enunit.parseUnitString( enunit.formatUnitString(units) ), units);
+}
+
+parseUndoesFormat({m: 4});
+parseUndoesFormat({m: 1});
+parseUndoesFormat({year: 1, person: 1});
+parseUndoesFormat({meter: 1, second: -1});
+parseUndoesFormat({meter: 1, second: -2});
+parseUndoesFormat({meter: 2, kg: 1, second: -2, foot: -1});
+
 // Try a custom UnitSpace
 (function() {
   var byteUnits = enunit.UnitSpace();
