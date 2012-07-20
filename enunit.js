@@ -1,13 +1,3 @@
-var units = {};
-
-function addBaseUnit(unit, type) {
-  if (units[unit]) {
-    throw new Error('Unit ' + unit + ' is already registered');
-  }
-  
-  units[unit] = type;
-}
-
 // units may use any characters except ^, /, *, and whitespace, which are part of the syntax
 var unitRegex = /^[^\d\^\*\s\/]+$/;
 
