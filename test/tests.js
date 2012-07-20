@@ -23,6 +23,13 @@ assert.throws(function() { enunit.parseUnitString(''); });
 assert.throws(function() { enunit.parseUnitString('m/s/s'); });
 assert.throws(function() { enunit.parseUnitString('m/s/s'); });
 
+// Try to add meters from two different UnitSpaces.
+assert.throws(function() {
+  var otherSpace = enunit.UnitSpace()
+    .register('meter');
+  
+  otherSpace(1, 'meter').plus( enunit(1, 'meter') );
+});
 
 function parseUndoesFormat(units) {
   assert.deepEqual(enunit.parseUnitString( enunit.formatUnitString(units) ), units);
