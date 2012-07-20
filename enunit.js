@@ -49,6 +49,10 @@ var parseUnitString = (function() {
   };
 }());
 
+/* Inverts parseUnitString (approximately), converting a units->power map to a string.
+ *
+ * Example: formatUnitString({mile: 1, hour: -1}) == 'mile / hour'
+ */
 var formatUnitString = (function() {
   var expString = function(name, exponent) {
     if (exponent === 1) {
@@ -73,6 +77,9 @@ var formatUnitString = (function() {
   }
 })();
 
+/* Check if two unit -> power maps are equivalent.
+ * (Not necessarily identical; {x: 0} is equivalent to {}.)
+ */
 function basesEqual(basis1, basis2) {
   var u;
   for (var u in basis1) {
