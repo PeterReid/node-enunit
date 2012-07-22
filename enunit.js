@@ -1,4 +1,6 @@
-﻿// units may use any characters except ^, /, *, and whitespace, which are part of the syntax
+﻿/* Units may use any characters except ^, /, *, and whitespace
+ * (which are part of the syntax).
+ */
 var unitRegex = /^[^\d\^\*\s\/]+$/;
 
 /* Parse a string into a map from unit strings to powers.
@@ -91,7 +93,9 @@ function basesEqual(basis1, basis2) {
   return true;
 }
 
-/* Combined two bases (string->int maps), summing the powers. */
+/* Combine two bases (string->int maps), adding (for direction=1) or 
+ * subtracting (for direction=-1) their powers. 
+ */
 function combineBases(basis1, basis2, direction) {
   var u;
   var result = {};
