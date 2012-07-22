@@ -86,7 +86,7 @@ function basesEqual(basis1, basis2) {
     if (basis1[u] != basis2[u]) return false;
   }
   for (var u in basis2) {
-    if (basis1[u] != basis2[u]) return false;
+    if (!(u in basis1) && basis2[u]) return false;
   }
   return true;
 }
@@ -102,7 +102,7 @@ function combineBases(basis1, basis2, direction) {
     }
   }
   for (var u in basis2) {
-    if (basis1[u] === undefined) {
+    if (!(u in basis1)) {
       result[u] = basis2[u]*direction;
     }
   }
