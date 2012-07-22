@@ -35,6 +35,7 @@ function parseUndoesFormat(units) {
   assert.deepEqual(enunit.parseUnitString( enunit.formatUnitString(units) ), units);
 }
 
+parseUndoesFormat({});
 parseUndoesFormat({m: 4});
 parseUndoesFormat({m: 1});
 parseUndoesFormat({m: -1});
