@@ -124,18 +124,21 @@ function ensureBasisMatch(v1, v2, op, preposition) {
 // Like a namespace, but for units
 function UnitSpace() {
   var registered = {};
+  var parsed = {}; // Cache of unit strings -> UnitedValues. 
+
   var unitSpace = function(amount, unitString) {
-    return resolveUnits(new UnitedValue(amount, parseUnitString(unitString)));
+    var oneOfUnit = parsed[unitString] || (parsed[unitString] = resolveUnits(parseUnitString(unitString)));
+    return new UnitedValue(amount*oneOfUnit.factor, oneOfUnit.basis)
   };
   
-  var resolveUnits = function(derivedPowers) {
-    var factor = derivedPowers.factor;
+  var resolveUnits = function(derivedBasis) {
+    var factor = 1;
     var basis = {};
-    for (var derivedUnit in derivedPowers.basis) {
+    for (var derivedUnit in derivedBasis) {
       var inBase = registered[derivedUnit];
       if (!inBase) throw new Error('Unknown unit: ' + derivedUnit);
       
-      var power = derivedPowers.basis[derivedUnit];
+      var power = derivedBasis[derivedUnit];
       factor *= Math.pow(inBase.factor, power);
       for (var baseUnit in inBase.basis) {
         var basisPower = (basis[baseUnit]||0) + power*inBase.basis[baseUnit];
