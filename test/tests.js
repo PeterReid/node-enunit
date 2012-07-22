@@ -72,6 +72,7 @@ assertClose(enunit(5, 'mile/hour').as('ft/second'), 5*5280/3600);
 assertClose(enunit(2, 'mile/hour').as('cm/minute'), 5364.48);
 assertClose(enunit(4, 'meter/second').as('cm/minute'), 24000);
 assertClose(enunit(360, 'degree').as('radian'), 2*Math.PI);
+assertClose(enunit(1000, 'cup').as('meter^3'), 0.236588237);
 
 assertClose(enunit(1, 'mile/hour').times(enunit(1, 'hour')).as('mile'), 1);
 assertClose(enunit(1, 'mile/hour').times(1, 'hour').as('mile'), 1);
