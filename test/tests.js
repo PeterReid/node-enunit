@@ -1,5 +1,5 @@
 var assert = require('assert');
-var enunit = require('../enunit');
+var enunit = require('../index');
 
 assert.deepEqual(enunit.parseUnitString('oz'), {oz: 1});
 assert.deepEqual(enunit.parseUnitString('kg*m/s^2'), {kg: 1, m: 1, s: -2});

@@ -1,4 +1,4 @@
-var enunit = require('../enunit');
+var enunit = require('../index');
 
 function profile(name, fn) {
   var start = process.hrtime();
