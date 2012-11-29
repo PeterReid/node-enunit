@@ -10,7 +10,7 @@
   "keywords": [
     "unit",
     "conversion"
-  ]
+  ],
   "license": "Public Domain",
   "engines": {
     "node": ">=0.6"
