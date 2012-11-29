@@ -1,0 +1,18 @@
+{
+  "name": "enunit",
+  "version": "0.1.0",
+  "author": "Peter Reid <peter.d.reid@gmail.com>",
+  "description": "unit conversion",  
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PeterReid/node-enunit.git"
+  },
+  "keywords": [
+    "unit",
+    "conversion"
+  ]
+  "license": "Public Domain",
+  "engines": {
+    "node": ">=0.6"
+  }
+}
