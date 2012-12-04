@@ -221,6 +221,13 @@ function UnitSpace() {
     return unitSpace(1, from).as(to);
   }
   
+  unitSpace.converter = function(from, to) {
+    var factor = this.conversionFactor(from, to);
+    return function(amountOfFrom) {
+      return factor * amountOfFrom;
+    };
+  };
+
   return unitSpace;
 };
 

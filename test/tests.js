@@ -86,3 +86,9 @@ assertClose(enunit(2, 'mile/hour').plus(4, 'meter/second').as('cm/minute'), 2936
 
 assertClose(enunit.conversionFactor('mile', 'yard'), 1760);
 assert.throws(function() { enunit.conversionFactor('inch', 'second'); });
+
+var feetToMeters = enunit.converter('foot', 'meter');
+assertClose(feetToMeters(3), 0.9144);
+
+var milesToFeet = enunit.converter('mile', 'foot');
+assertClose(milesToFeet(3), 5280*3);
